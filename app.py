@@ -5,18 +5,16 @@ from datetime import date
 
 # --- Data Loading & Cleaning ---
 @st.cache_data
-def load_data(path):
-    df = pd.read_excel(path, engine='openpyxl')
+def load_data():
+    url = "https://raw.githubusercontent.com/EminaToric/sales-analytics/main/OnlineRetail.xlsx"
+    df = pd.read_excel(url, engine='openpyxl')
     df['InvoiceDate'] = pd.to_datetime(df['InvoiceDate'])
-    df = df[~df['InvoiceNo'].astype(str).str.startswith('C')]  # drop cancelled
-    df = df[df['Country'] == 'United Kingdom']                # filter UK
-    df = df.dropna(subset=['CustomerID'])                     # drop missing customers
-    df = df[(df['Quantity'] > 0) & (df['UnitPrice'] > 0)]     # drop non-positive
-    df['Revenue'] = df['Quantity'] * df['UnitPrice']          # compute revenue
+    df = df[~df['InvoiceNo'].astype(str).str.startswith('C')]
+    df = df[df['Country'] == 'United Kingdom']
     df['Month'] = df['InvoiceDate'].dt.to_period('M')
     return df
 
-df = load_data('OnlineRetail.xlsx')
+df = load_data()
 
 # --- Sidebar ---
 st.sidebar.title("Sales Explorer")
